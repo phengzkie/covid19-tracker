@@ -6,6 +6,8 @@ import { fetchData } from './api';
 
 import 'semantic-ui-css/semantic.min.css';
 
+import CountryState from './context/country/CountryState';
+
 class App extends React.Component {
   state = {
     data: {},
@@ -22,12 +24,14 @@ class App extends React.Component {
     const { data, content } = this.state;
 
     return (
-      <div>
-        <AppBar />
-        <Tally data={data} />
-        <Chart />
-        <Footer />
-      </div>
+      <CountryState>
+        <div>
+          <AppBar />
+          <Tally data={data} />
+          <Chart />
+          <Footer />
+        </div>
+      </CountryState>
     );
   }
 }

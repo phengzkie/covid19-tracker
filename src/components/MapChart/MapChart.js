@@ -33,7 +33,6 @@ const MapChart = ({ setTooltipContent }) => {
                   geography={geo}
                   onMouseEnter={() => {
                     const { NAME, POP_EST } = geo.properties;
-                    console.log(geo.properties)
                     setTooltipContent(`${NAME} — ${rounded(POP_EST)}`);
                   }}
                   onMouseLeave={() => {
