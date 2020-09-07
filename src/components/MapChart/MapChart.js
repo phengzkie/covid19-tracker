@@ -1,11 +1,12 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect, useContext } from "react";
+
+import MapContext from '../../context/map/mapContext';
+
 import {
   ComposableMap,
   Geographies,
   Geography
 } from "react-simple-maps";
-
-import styles from './MapChart.module.css';
 
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
@@ -21,19 +22,49 @@ const rounded = num => {
 };
 
 const MapChart = ({ setTooltipContent }) => {
+  const mapContext = useContext(MapContext);
+
+  const { getAllCountriesResult, data } = mapContext;
+
+  useEffect(() => {
+      getAllCountriesResult();
+  }, []);
+
+
   return (
     <>
       <ComposableMap  data-tip="" projectionConfig={{ rotate: [0, 0, 0],
           scale: 160, }}>
+          {data.length !== 0 && (
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
-              geographies.map(geo => (
+              geographies.map(geo => {
+                const d = data.find((s) => {
+                  return s
+                    ? s.countryInfo.iso3 === geo.properties.ISO_A3 ||
+                        s.countryInfo.iso2 === geo.properties.ISO_A2 ||
+                        s.country === geo.properties.Name
+                    : null;
+                });
+                return (
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
                   onMouseEnter={() => {
-                    const { NAME, POP_EST } = geo.properties;
-                    setTooltipContent(`${NAME} — ${rounded(POP_EST)}`);
+                    const { NAME } = geo.properties;
+                    let cases = "";
+                    let deaths = "";
+                    if(d) {
+                      cases = d["cases"].toLocaleString(undefined, {
+                          maximumFractionDigits: 0,
+                          minimumFractionDigits: 0,
+                      });
+                      deaths = d["deaths"].toLocaleString(undefined, {
+                          maximumFractionDigits: 0,
+                          minimumFractionDigits: 0,
+                      });
+                    }
+                    setTooltipContent(`${NAME} — Cases : ${cases} | Deaths : ${deaths}`);
                   }}
                   onMouseLeave={() => {
                     setTooltipContent();
@@ -52,10 +83,10 @@ const MapChart = ({ setTooltipContent }) => {
                       outline: "none"
                     }
                   }}
-                />
-              ))
+                />)
+            })
             }
-          </Geographies>
+          </Geographies>)}
       </ComposableMap>
     </>
   );

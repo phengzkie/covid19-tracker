@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 
-import { Card, Icon, Grid, Container, Flag } from 'semantic-ui-react';
+import { Card, Icon, Grid, Container } from 'semantic-ui-react';
 import CountUp from 'react-countup';
 
 import moment from 'moment';
@@ -12,9 +12,18 @@ import { MapChart } from '../../components';
 
 const Tally = ({ data: { cases, recovered, deaths, active, updated } }) => {
   const [ content, setContent ] = useState('');
+  let country = '';
+  let casesPerCountry = '';
+  let deathsPerCountry = '';
 
   if (!cases) {
     return <Icon name="spinner" />;
+  }
+
+  if (content) {
+    country = content.split('—')[0];
+    casesPerCountry = content.split('—')[1].split('|')[0];
+    deathsPerCountry = content.split('|')[1];
   }
 
   return (
@@ -55,7 +64,11 @@ const Tally = ({ data: { cases, recovered, deaths, active, updated } }) => {
           <Grid.Column>
             <Card.Content header="World Map" />
             <MapChart setTooltipContent={setContent} />
-            <ReactTooltip>{content}</ReactTooltip>
+            <ReactTooltip>
+              <p>{country}</p>
+              <p>{casesPerCountry}</p>
+              <p>{deathsPerCountry}</p>
+            </ReactTooltip>
           </Grid.Column>
         </Grid.Row>
       </Grid>
